@@ -1,0 +1,34 @@
+#!/bin/bash
+# Detect the platform (similar to $OSTYPE)
+OS="`uname`"
+case $OS in
+  'Linux')
+    OS='Linux'
+    ;;
+  'FreeBSD')
+    OS='FreeBSD'
+    ;;
+  'WindowsNT')
+    OS='Windows'
+    ;;
+  'Darwin') 
+    OS='Mac'
+    ;;
+  'SunOS')
+    OS='Solaris'
+    ;;
+  'AIX') ;;
+  *) ;;
+esac
+
+if [[ $1 == https://github.com/+([^/])/+([^/]) ]]    
+  then repo=`echo $1 | cut -d "/" -f 4-5`
+elif [[ $1 == +([^/])/+([^/]) ]]
+  then repo=$1
+else
+  echo "Sample Usage: gitr https://github.com/zweicoder/gitr or gitr zweicoder/gitr"
+  exit 0
+fi
+
+echo "Downloading latest release from $repo..."
+curl -s https://api.github.com/repos/ethereum/go-ethereum/releases/latest | grep -iE browser_download_url.+$OS | cut -d '"' -f 4 | xargs wget
